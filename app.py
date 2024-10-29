@@ -52,9 +52,29 @@ def logout():
 
   return response
 
-@app.route("/hello", methods=["GET"])
-def hello_world():
-  return "Hello World!"
+@app.route('/user', methods=["POST"])
+def create_user():
+  data = request.json
+  username = data.get("username")
+  password = data.get("password")
+
+  if username and password:
+    user = User(username=username, password=password)
+
+    database.session.add(user)
+    database.session.commit()
+
+    response = jsonify({
+      "message": "User created successfully"
+    })
+
+    return response
+
+  response = jsonify({
+    "message": "Invalid data"
+  }), 400
+
+  return response
 
 if __name__ == "__main__":
   app.run(debug=True)
