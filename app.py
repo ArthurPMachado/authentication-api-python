@@ -76,5 +76,44 @@ def create_user():
 
   return response
 
+@app.route('/user/<int:id>', methods=["GET"])
+@login_required
+def get_user(id):
+  user = User.query.get(id)
+
+  if user:
+    return {
+      "username": user.username
+    }
+  
+  response = jsonify({
+    "message": "User not found"
+  }), 404
+
+  return response
+
+@app.route('/user/<int:id>', methods=["PUT"])
+@login_required
+def update_user(id):
+  data = request.json
+  user = User.query.get(id)
+
+  if user and data.get("password"):
+    user.password = data.get("password")
+
+    database.session.commit()
+
+    response = jsonify({
+      "message": f"User {id} updated successfully"
+    })
+
+    return response 
+  
+  response = jsonify({
+    "message": "User not found"
+  }), 404
+
+  return response
+
 if __name__ == "__main__":
   app.run(debug=True)
